@@ -82,7 +82,7 @@ CGO_ENABLED=0 go build -o polyapi ./src/cmd/polyapi
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o polyapi ./src/cmd/polyapi
 ```
 
-Tagged `v*` builds in [`.github/workflows/dist.yml`](.github/workflows/dist.yml) cross-compile linux/darwin/windows (amd64+arm64), attach SHA-256 checksums, and publish a GitHub Release.
+[`.github/workflows/dist.yml`](.github/workflows/dist.yml) cross-compiles linux/darwin/windows (amd64+arm64), attaches SHA-256 checksums, and publishes a GitHub Release (manual dispatch stamps `src/version.Version` and creates the `v*` tag when that version is new; pushing a `v*` tag also publishes).
 
 ## Versioning
 

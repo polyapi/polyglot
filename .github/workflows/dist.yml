@@ -1,9 +1,24 @@
-# Cross-compile checksummed polyapi binaries. Tags named v* are published as
-# GitHub Releases; workflow_dispatch only uploads the artifact.
+# Cross-compile checksummed polyapi binaries and publish a GitHub Release.
+#
+# workflow_dispatch (Actions → dist → Run workflow):
+#   Stamps POLYAPI_VERSION from the "version" input, or src/version.Version
+#   when the input is empty. Always uploads the dist artifact. If GitHub has
+#   no release for v<version> yet, creates that tag at this commit and cuts
+#   the Release (so install.sh / polyapi update can see "latest").
+#   Re-running the same version refreshes the release assets.
+#
+# push of tags named v*:
+#   Same build + Release path, using the tag as the version (for people who
+#   tag locally and push).
 name: dist
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Semver to stamp, tag, and release (empty = src/version.Version)"
+        required: false
+        type: string
   push:
     tags: ["v*"]
 
@@ -22,11 +37,44 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+
+      - name: resolve version
+        id: version
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          set -eu
+          ver=
+          if [ "$REF_TYPE" = tag ]; then
+            ver=$REF_NAME
+          elif [ -n "${INPUT_VERSION:-}" ]; then
+            ver=$INPUT_VERSION
+          else
+            ver=$(sed -n 's/^var Version = "\([^"]*\)"/\1/p' src/version/version.go | head -n 1)
+          fi
+          ver=${ver#v}
+          if [ -z "$ver" ]; then
+            echo "could not resolve a version (set the workflow input or src/version.Version)" >&2
+            exit 1
+          fi
+          case "$ver" in
+            *[[:space:]]*|*/*)
+              echo "refusing version '$ver'" >&2
+              exit 1
+              ;;
+          esac
+          echo "ver=${ver}" >>"$GITHUB_OUTPUT"
+          echo "tag=v${ver}" >>"$GITHUB_OUTPUT"
+          echo "resolved version ${ver} (tag v${ver})"
+
       - name: build
         env:
-          POLYAPI_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '0.1.0-dev' }}
+          POLYAPI_VERSION: ${{ steps.version.outputs.ver }}
           POLYAPI_COMMIT: ${{ github.sha }}
         run: scripts/build.sh
+
       - uses: actions/upload-artifact@v4
         with:
           name: polyapi-dist
@@ -34,23 +82,36 @@ jobs:
             builds/polyapi-*
             builds/checksums*.txt
           if-no-files-found: error
+
       - name: attest
-        if: github.ref_type == 'tag'
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: builds/polyapi-*
+
       - name: release
-        if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ steps.version.outputs.tag }}
+          VER: ${{ steps.version.outputs.ver }}
+          TARGET: ${{ github.sha }}
         run: |
           set -eu
-          ver="${TAG#v}"
-          assets=$(ls builds/polyapi-"${ver}"-* builds/checksums-"${ver}".txt)
-          cp "builds/checksums-${ver}.txt" builds/checksums.txt
+          assets=$(ls builds/polyapi-"${VER}"-* builds/checksums-"${VER}".txt)
+          cp "builds/checksums-${VER}.txt" builds/checksums.txt
+          extra=
+          case "$VER" in
+            *-*) extra=--prerelease ;;
+          esac
           if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release ${TAG} already exists; updating assets"
             gh release upload "$TAG" $assets builds/checksums.txt --clobber
           else
-            gh release create "$TAG" $assets builds/checksums.txt --title "$TAG" --generate-notes
+            echo "creating tag ${TAG} at ${TARGET} and GitHub Release"
+            # gh creates the git tag when it does not exist (GITHUB_TOKEN
+            # tag pushes do not re-trigger this workflow).
+            gh release create "$TAG" $assets builds/checksums.txt \
+              --title "$TAG" \
+              --target "$TARGET" \
+              --generate-notes \
+              $extra
           fi

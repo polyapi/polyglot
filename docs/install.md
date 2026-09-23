@@ -41,14 +41,14 @@ polyapi update --check
 
 ## GitHub Releases
 
-Tagged builds (`v*`) publish checksummed binaries from [`.github/workflows/dist.yml`](../.github/workflows/dist.yml):
+[`.github/workflows/dist.yml`](../.github/workflows/dist.yml) cross-compiles checksummed binaries and publishes a GitHub Release. Run it from Actions (uses `src/version.Version`, or a version input) or push a `v*` tag. A new version creates the git tag and the Release; the same version refreshes the assets.
 
 | File | What |
 | --- | --- |
 | `polyapi-<version>-<os>-<arch>` (`.exe` on Windows) | The CLI |
 | `checksums.txt` | SHA-256 of every asset in that release |
 
-GitHub artifact attestations are attached to tag builds (`gh attestation verify`). Apple notarization and Windows Authenticode are not part of this ticket.
+GitHub artifact attestations are attached (`gh attestation verify`). Apple notarization and Windows Authenticode are not part of this ticket.
 
 ## Self-update
 
