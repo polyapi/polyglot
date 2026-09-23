@@ -41,7 +41,7 @@ Real TypeScript / Python adapters live in those SDKs (POLY-CLI-11 / 12), not thi
 ### Linux and MacOS:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/polyapi/polyglot/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/polyapi/polyglot/refs/heads/main/scripts/install.sh | sh
 polyapi version
 ```
 
@@ -50,7 +50,7 @@ If the install directory is not already on `PATH`, the script appends it to your
 ### Windows:
 
 ```powershell
-irm https://raw.githubusercontent.com/polyapi/polyglot/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/polyapi/polyglot/refs/heads/main/scripts/install.ps1 | iex
 polyapi version
 ```
 
