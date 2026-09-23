@@ -1,0 +1,32 @@
+{
+  "protocol": 1,
+  "id": "00000000-0000-4000-8000-000000000005",
+  "op": "prepare",
+  "project_root": "/abs/path",
+  "lang": "typescript",
+  "config": {
+    "poly_path": ".poly"
+  },
+  "params": {
+    "disable_docs": false,
+    "files": [
+      {
+        "file": "src/demo/server/hello.ts",
+        "docs": {
+          "description": "Greet a person.",
+          "arguments": [
+            {
+              "name": "firstName",
+              "type": "string",
+              "description": "Name to greet."
+            }
+          ],
+          "returns": {
+            "type": "string",
+            "description": "Greeting text."
+          }
+        }
+      }
+    ]
+  }
+}

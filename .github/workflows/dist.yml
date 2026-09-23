@@ -1,0 +1,56 @@
+# Cross-compile checksummed polyapi binaries. Tags named v* are published as
+# GitHub Releases; workflow_dispatch only uploads the artifact.
+name: dist
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: build
+        env:
+          POLYAPI_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '0.1.0-dev' }}
+          POLYAPI_COMMIT: ${{ github.sha }}
+        run: scripts/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: polyapi-dist
+          path: |
+            builds/polyapi-*
+            builds/checksums*.txt
+          if-no-files-found: error
+      - name: attest
+        if: github.ref_type == 'tag'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: builds/polyapi-*
+      - name: release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -eu
+          ver="${TAG#v}"
+          assets=$(ls builds/polyapi-"${ver}"-* builds/checksums-"${ver}".txt)
+          cp "builds/checksums-${ver}.txt" builds/checksums.txt
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" $assets builds/checksums.txt --clobber
+          else
+            gh release create "$TAG" $assets builds/checksums.txt --title "$TAG" --generate-notes
+          fi

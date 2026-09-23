@@ -1,0 +1,25 @@
+{
+  "protocol": 1,
+  "id": "00000000-0000-4000-8000-000000000000",
+  "ok": true,
+  "op": "capabilities",
+  "result": {
+    "protocol": 1,
+    "min_protocol": 1,
+    "ops": [
+      "capabilities",
+      "generate",
+      "discover",
+      "inspect",
+      "extract",
+      "prepare",
+      "write_receipt",
+      "parse_function",
+      "clear"
+    ],
+    "lang": "typescript",
+    "sdk_version": "fixture-1"
+  },
+  "warnings": [],
+  "error": null
+}

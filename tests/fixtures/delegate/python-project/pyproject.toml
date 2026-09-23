@@ -1,0 +1,4 @@
+[project]
+name = "poly-delegate-py-sample"
+version = "0.0.0"
+dependencies = ["polyapi"]

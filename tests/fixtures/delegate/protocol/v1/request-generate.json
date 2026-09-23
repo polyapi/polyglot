@@ -1,0 +1,15 @@
+{
+  "protocol": 1,
+  "id": "00000000-0000-4000-8000-000000000001",
+  "op": "generate",
+  "project_root": "/abs/path",
+  "lang": "typescript",
+  "config": {
+    "poly_path": ".poly",
+    "disable_ai": true
+  },
+  "params": {
+    "specs": [{ "id": "abc", "name": "apiKey", "context": "billing", "type": "serverFunction" }],
+    "no_types": true
+  }
+}

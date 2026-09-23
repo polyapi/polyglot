@@ -1,0 +1,15 @@
+{
+  "protocol": 1,
+  "id": "00000000-0000-4000-8000-000000000006",
+  "op": "parse_function",
+  "project_root": "/abs/path",
+  "lang": "typescript",
+  "config": {
+    "poly_path": ".poly"
+  },
+  "params": {
+    "file": "src/demo/server/hello.ts",
+    "name": "hello",
+    "kind": "server"
+  }
+}

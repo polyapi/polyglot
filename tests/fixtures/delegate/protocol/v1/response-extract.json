@@ -1,0 +1,30 @@
+{
+  "protocol": 1,
+  "id": "00000000-0000-4000-8000-000000000003",
+  "ok": true,
+  "op": "extract",
+  "result": {
+    "payload": {
+      "name": "hello",
+      "context": "demo",
+      "description": "Greet a person.",
+      "code": "function hello(firstName: string): string { return firstName; }",
+      "language": "typescript",
+      "visibility": "ENVIRONMENT",
+      "arguments": [
+        {
+          "key": "firstName",
+          "name": "firstName",
+          "type": "string",
+          "description": "Name to greet."
+        }
+      ],
+      "returnType": "string",
+      "logsEnabled": true
+    },
+    "content_hash": "fixture-hash",
+    "meta": { "lang": "typescript", "file": "src/demo/server/hello.ts" }
+  },
+  "warnings": [],
+  "error": null
+}

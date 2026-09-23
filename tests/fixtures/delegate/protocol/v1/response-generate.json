@@ -1,0 +1,12 @@
+{
+  "protocol": 1,
+  "id": "00000000-0000-4000-8000-000000000001",
+  "ok": true,
+  "op": "generate",
+  "result": {
+    "files_written": ["src/poly/index.ts"],
+    "stats": { "files": 1 }
+  },
+  "warnings": [],
+  "error": null
+}

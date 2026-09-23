@@ -1,0 +1,7 @@
+{
+  "name": "poly-delegate-ts-sample",
+  "private": true,
+  "dependencies": {
+    "polyapi": "0.0.0-fixture"
+  }
+}

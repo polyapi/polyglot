@@ -1,0 +1,21 @@
+{
+  "protocol": 1,
+  "id": "00000000-0000-4000-8000-000000000002",
+  "ok": true,
+  "op": "discover",
+  "result": {
+    "deployables": [
+      {
+        "type": "variable",
+        "name": "apiKey",
+        "context": "billing",
+        "file": "src/billing/vari/apiKey.ts",
+        "export": "polyConfig",
+        "content_hash": null,
+        "receipt": null
+      }
+    ]
+  },
+  "warnings": [],
+  "error": null
+}
