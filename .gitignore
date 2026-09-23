@@ -1,6 +1,8 @@
-# Go build output
-polyapi
-polyapi.exe
+# Go build output. /polyapi is the repo-root binary from
+# `go build -o polyapi`; it must be anchored so Git still tracks
+# the command package at src/cmd/polyapi.
+/polyapi
+/polyapi.exe
 *.exe
 *.test
 *.out

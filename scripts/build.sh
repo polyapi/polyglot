@@ -133,6 +133,15 @@ fi
 pkg=github.com/polyapi/polyglot/src/version
 ldflags="-s -w -X ${pkg}.Version=${ver} -X ${pkg}.Commit=${commit} -X ${pkg}.Date=${date}"
 
+pkgdir="$ROOT/src/cmd/polyapi"
+if [ ! -f "$pkgdir/main.go" ]; then
+	echo "scripts/build.sh: missing $pkgdir/main.go" >&2
+	echo "scripts/build.sh: if this is a git checkout, .gitignore must not ignore a path named polyapi (use /polyapi for the root binary)" >&2
+	exit 1
+fi
+
+hostos=$(go env GOHOSTOS)
+
 echo "building polyapi ${ver} -> ${OUT}"
 for pair in $targets; do
 	goos=${pair%/*}
@@ -147,16 +156,20 @@ for pair in $targets; do
 	# -C "$ROOT" so the script is safe to run from any cwd.
 	CGO_ENABLED=0 GOOS="$goos" GOARCH="$goarch" go build -C "$ROOT" --trimpath -ldflags "$ldflags" -o "${OUT}/${name}" ./src/cmd/polyapi
 
-	# Remove debug symbols from the binary.
-	strip ${OUT}/${name}
+	# Remove debug symbols from the binary. strip(1) only understands the
+	# host object format, so skip when cross-compiling to another OS
+	# (GNU strip on the Ubuntu runner cannot process Mach-O or PE).
+	if [ "$goos" = "$hostos" ]; then
+		strip "${OUT}/${name}"
+	fi
 
-    # TODO: Investigate performance and tradeoffs with using binary compression.
+	# TODO: Investigate performance and tradeoffs with using binary compression.
 	# # Compress the executable (test performance impact before using in production).
 	# upx -9 ${OUT}/${name} --force-macos
 
 	# Check the final binary size.
-	ls -lh ${OUT}/${name}
-	done
+	ls -lh "${OUT}/${name}"
+done
 
 # Hash only this version's files, from inside $OUT so the checksums file
 # stores bare filenames (what install.sh greps for), not absolute paths.

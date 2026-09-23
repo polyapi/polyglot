@@ -320,6 +320,26 @@ func TestInstallScriptPathIdempotent(t *testing.T) {
 	}
 }
 
+func TestGitignoreDoesNotIgnoreCmdPackage(t *testing.T) {
+	root := repoRoot(t)
+	raw, err := os.ReadFile(filepath.Join(root, ".gitignore"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, line := range strings.Split(string(raw), "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		if line == "polyapi" || line == "polyapi/" || line == "**/polyapi" {
+			t.Fatalf(".gitignore:%d %q ignores src/cmd/polyapi; use /polyapi for the root binary", i+1, line)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(root, "src", "cmd", "polyapi", "main.go")); err != nil {
+		t.Fatalf("command package missing: %v", err)
+	}
+}
+
 func TestBuildScriptNative(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("posix build.sh")

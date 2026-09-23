@@ -72,7 +72,7 @@ ls builds/
 # checksums-0.1.0.txt
 ```
 
-`builds/` is gitignored. Published copies live on GitHub Releases.
+Published copies also live on GitHub Releases.
 
 ```bash
 go install github.com/polyapi/polyglot/src/cmd/polyapi@latest

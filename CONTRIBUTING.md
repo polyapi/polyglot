@@ -18,7 +18,7 @@ gofmt -w src tests
 go test ./...
 ```
 
-CI (`.github/workflows/ci.yml`) runs `gofmt -l src tests` (must be empty), `sh -n` on `scripts/*.sh`, and `go test ./...` on Ubuntu, macOS, and Windows. Cross-compiled release binaries are built from `.github/workflows/dist.yml` (manual dispatch or `v*` tags) via `scripts/build.sh`. Tags named `v*` publish a GitHub Release with SHA-256 checksums. Local versioned binaries land in `builds/` (`scripts/build.sh`; gitignored). See [docs/install.md](docs/install.md).
+CI (`.github/workflows/ci.yml`) runs `gofmt -l src tests` (must be empty), `sh -n` on `scripts/*.sh`, and `go test ./...` on Ubuntu, macOS, and Windows. Cross-compiled release binaries are built from `.github/workflows/dist.yml` (manual dispatch or `v*` tags) via `scripts/build.sh`. Tags named `v*` publish a GitHub Release with SHA-256 checksums. Local versioned binaries land in `builds/` (`scripts/build.sh`). See [docs/install.md](docs/install.md).
 
 ## Layout
 
