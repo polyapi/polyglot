@@ -141,6 +141,7 @@ if [ ! -f "$pkgdir/main.go" ]; then
 fi
 
 hostos=$(go env GOHOSTOS)
+hostarch=$(go env GOHOSTARCH)
 
 echo "building polyapi ${ver} -> ${OUT}"
 for pair in $targets; do
@@ -157,9 +158,9 @@ for pair in $targets; do
 	CGO_ENABLED=0 GOOS="$goos" GOARCH="$goarch" go build -C "$ROOT" --trimpath -ldflags "$ldflags" -o "${OUT}/${name}" ./src/cmd/polyapi
 
 	# Remove debug symbols from the binary. strip(1) only understands the
-	# host object format, so skip when cross-compiling to another OS
-	# (GNU strip on the Ubuntu runner cannot process Mach-O or PE).
-	if [ "$goos" = "$hostos" ]; then
+	# host object format: GNU strip on linux/amd64 cannot process linux/arm64
+	# ELF, Mach-O, or PE. Skip any target that is not this machine.
+	if [ "$goos" = "$hostos" ] && [ "$goarch" = "$hostarch" ]; then
 		strip "${OUT}/${name}"
 	fi
 
