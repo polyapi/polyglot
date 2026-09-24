@@ -218,10 +218,19 @@ func splitCommandLine(raw string) ([]string, error) {
 		c := runes[i]
 		switch {
 		case c == '\\':
+			// Treat \ as an escape only for quotes, backslash, and
+			// whitespace (POSIX `foo\ bar`). Anything else — including
+			// Windows path letters — is a literal backslash so
+			// `--adapter node C:\foo\adapter.js` stays intact.
 			if i+1 < len(runes) {
-				i++
-				cur.WriteRune(runes[i])
+				next := runes[i+1]
+				if next == '"' || next == '\'' || next == '\\' || unicode.IsSpace(next) {
+					i++
+					cur.WriteRune(next)
+					continue
+				}
 			}
+			cur.WriteRune('\\')
 		case quote == 0 && (c == '"' || c == '\''):
 			quote = c
 		case quote != 0 && c == quote:

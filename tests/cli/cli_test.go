@@ -30,8 +30,7 @@ func run(args ...string) (stdout, stderr string, code int) {
 }
 
 func TestThemePaint(t *testing.T) {
-	t.Setenv("NO_COLOR", "")
-	t.Setenv("CLICOLOR_FORCE", "1")
+	forceTrueColor(t)
 	s := cli.Header("polyapi")
 	if !strings.Contains(s, "polyapi") || !strings.Contains(s, "\x1b") {
 		t.Fatalf("expected ANSI in %q", s)
@@ -55,9 +54,16 @@ func TestThemePaint(t *testing.T) {
 	}
 }
 
-func TestHelpUsesPolyBrandColors(t *testing.T) {
+func forceTrueColor(t *testing.T) {
+	t.Helper()
 	t.Setenv("NO_COLOR", "")
 	t.Setenv("CLICOLOR_FORCE", "1")
+	t.Setenv("COLORTERM", "truecolor")
+	t.Setenv("TERM", "xterm-256color")
+}
+
+func TestHelpUsesPolyBrandColors(t *testing.T) {
+	forceTrueColor(t)
 	stdout, _, code := run("--help")
 	if code != 0 {
 		t.Fatalf("help exit %d", code)
@@ -112,8 +118,7 @@ func TestTopLevelCommandSurface(t *testing.T) {
 }
 
 func TestHelpIncludesExamples(t *testing.T) {
-	t.Setenv("NO_COLOR", "")
-	t.Setenv("CLICOLOR_FORCE", "1")
+	forceTrueColor(t)
 	t.Setenv("__FANG_TEST_WIDTH", "120")
 	cases := []struct {
 		args []string

@@ -580,6 +580,27 @@ func TestSplitCommandQuotes(t *testing.T) {
 	}
 }
 
+func TestSplitCommandKeepsWindowsBackslashes(t *testing.T) {
+	raw := `node C:\foo\bar\adapter.js`
+	argv, err := delegate.SplitCommandLine(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(argv) != 2 || argv[0] != "node" || argv[1] != `C:\foo\bar\adapter.js` {
+		t.Fatalf("%v", argv)
+	}
+}
+
+func TestSplitCommandEscapesSpace(t *testing.T) {
+	argv, err := delegate.SplitCommandLine(`node ./my\ adapter.js`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(argv) != 2 || argv[0] != "node" || argv[1] != "./my adapter.js" {
+		t.Fatalf("%v", argv)
+	}
+}
+
 func TestMissingBinaryIsExit10(t *testing.T) {
 	dir := t.TempDir()
 	_, err := delegate.ProcessRunner{}.Run(delegate.Job{

@@ -354,8 +354,9 @@ func TestPaths(t *testing.T) {
 	if got != want {
 		t.Fatalf("%q != %q", got, want)
 	}
-	if config.PolyDir("/repo", "/tmp/custom-poly") != "/tmp/custom-poly" {
-		t.Fatalf("%q", config.PolyDir("/repo", "/tmp/custom-poly"))
+	custom := filepath.Join(t.TempDir(), "custom-poly")
+	if config.PolyDir("/repo", custom) != custom {
+		t.Fatalf("%q", config.PolyDir("/repo", custom))
 	}
 	path := config.UserConfigFile()
 	if filepath.Base(path) != "config.toml" {

@@ -284,6 +284,8 @@ func TestFormatEditPromptPutsUsageAboveInput(t *testing.T) {
 func TestFormatEditPromptUsageUsesListGray(t *testing.T) {
 	t.Setenv("NO_COLOR", "")
 	t.Setenv("CLICOLOR_FORCE", "1")
+	t.Setenv("COLORTERM", "truecolor")
+	t.Setenv("TERM", "xterm-256color")
 	got := cli.FormatEditPrompt("--contexts", "Contexts to generate (comma-separated)", "billing", 80)
 	if !strings.Contains(got, rgbSeq(cli.Stone500)) {
 		t.Fatalf("usage should use Stone500 (list-view gray):\n%q", got)
